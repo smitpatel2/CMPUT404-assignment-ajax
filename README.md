@@ -11,5 +11,8 @@ Contributors / Licensing
 ========================
 
 Generally everything is LICENSE'D under the Apache 2 license by Abram Hindle.
+Codebase modifications are LICENSE'd under the Apache 2 license by Smit Patel.
+
+
 
 
