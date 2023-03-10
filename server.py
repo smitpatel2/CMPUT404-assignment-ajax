@@ -2,6 +2,7 @@
 # coding: utf-8
 # Copyright 2013 Abram Hindle
 # 
+# Added code by Smit Patel
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
 # You may obtain a copy of the License at
@@ -22,7 +23,7 @@
 
 
 import flask
-from flask import Flask, request
+from flask import Flask, redirect, request, jsonify
 import json
 app = Flask(__name__)
 app.debug = True
