@@ -40,6 +40,8 @@ function sendJSONXMLHTTPRequest(url, objects, callback) {
                 if (xhr.status==200) {
                     //XXX: parse some JSON from the request!
                     //XXX: Pass the data to the callback!
+			callback(JSON.parse(xhr.response));
+
                 }
             } 
             catch(e) {
@@ -50,6 +52,11 @@ function sendJSONXMLHTTPRequest(url, objects, callback) {
     //XXX: POST to a URL
     //XXX: set the mimetype and the accept headers!
     // Remember to use application/json !
+	
+    xhr.open("POST", url, true);
+    xhr.setRequestHeader("Content-Type", "application/json");
+    xhr.setRequestHeader("Accept", "application/json");
+    xhr.send(JSON.stringify(objects));	
 }
 
 
@@ -66,7 +73,8 @@ function drawCircle(context,entity) {
         fillStyle = entity["colour"];
         strokeStyle = fillStyle;
         arc(x, y, (entity["radius"])?entity["radius"]:50, 0, 2.0 * Math.PI, false);  
-        stroke();                                
+        //stroke();       
+	fill();
     }
 }
 
@@ -138,6 +146,7 @@ function addEntity(entity, data) {
     world[entity] = data;
     drawNextFrame(); // (but should we?)
     //XXX: Send a XHTML Request that updates the entity you just  modified!
+    sendJSONXMLHTTPRequest(`/entity/${entity}`, data , ()=>{drawNextFrame();});
 
 }
 
@@ -248,20 +257,35 @@ mouse = (function() {
 //XXX: TODO Make these prettier!
 mouse.mousedowners.push(function(x,y,clicked,e) {
     addEntityWithoutName({'x':x,'y':y,'colour':'blue'});
+    color = getRandomColor();
+    addEntityWithoutName({'x':x,'y':y,'colour':color});
 });
 
 mouse.mouseuppers.push(function(x,y,clicked,e) {
-    addEntityWithoutName({'x':x,'y':y,'colour':'red'});
+    addEntityWithoutName({'x':x,'y':y,'colour':'red','radius': 10});
 });
 
 mouse.mousedraggers.push(function(x,y,clicked,e) {
-    addEntityWithoutName({'x':x,'y':y,'colour':'green',
+    color = getRandomColor();
+
+    addEntityWithoutName({'x':x,'y':y,'colour':color,
                           'radius':10});
 });
+	    
+function getRandomColor() {
+  const letters = '0123456789ABCDEF';
+  const color = Array.from({length: 6}, () => letters[Math.floor(Math.random() * 16)]).join('');
+  return `#${color}`;
+}
 
 
 function update() {
     //XXX: TODO Get the world from the webservice using a XMLHTTPRequest
+    // Get the world from the webservice using a JSON XMLHttpRequest
+    sendJSONXMLHTTPRequest("/world",null,(data)=>{
+        world = data;
+        drawNextFrame();
+    });
     drawFrame();
 }
 
